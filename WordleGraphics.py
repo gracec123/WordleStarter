@@ -16,7 +16,7 @@ N_ROWS = 6			# Number of rows
 N_COLS = 5			# Number of columns
 
 CORRECT_COLOR = "#1338BE"       # Light green for correct letters
-PRESENT_COLOR = "#FFD580"       # Brownish yellow for misplaced letters
+PRESENT_COLOR = "#C35817"       # Brownish yellow for misplaced letters
 MISSING_COLOR = "#999999"       # Gray for letters that don't appear
 UNKNOWN_COLOR = "#FFFFFF"       # Undetermined letters are white
 KEY_COLOR = "#DDDDDD"           # Keys are colored light gray
