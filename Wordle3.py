@@ -37,20 +37,33 @@ def wordle():
                     for col, letter in enumerate(cleaned_input.upper()):
                         gw.set_square_letter(current_row, col, letter)
 
-                    # Check and color the boxes based on correctness
+  
+                
+                    # ...
+                    # After the first pass for correct positions
+                    # Create a copy of the word to keep track of matched letters
+                    remaining_word = list(word)
+
+                    # Create a list to store the color for each square
+                    square_colors = [MISSING_COLOR] * len(cleaned_input)
+
                     for col, guess_letter in enumerate(cleaned_input):
                         word_letter = word[col]
 
+                        # First Pass: Check for correct positions
                         if guess_letter == word_letter:
-                            gw.set_square_color(current_row, col, CORRECT_COLOR)
-                        elif guess_letter in word:
-                            gw.set_square_color(current_row, col, PRESENT_COLOR)
-                        else:
-                            gw.set_square_color(current_row, col, MISSING_COLOR)
-                    
-                    
-                    # ...
+                            square_colors[col] = CORRECT_COLOR
+                            remaining_word[col] = None  # Remove this letter from remaining_word
 
+                    # Second Pass: Check for presence in wrong positions
+                    for col, guess_letter in enumerate(cleaned_input):
+                        if square_colors[col] == MISSING_COLOR and guess_letter in remaining_word:
+                            square_colors[col] = PRESENT_COLOR
+                            remaining_word[remaining_word.index(guess_letter)] = None  # Remove one occurrence
+
+                    # Apply colors to the squares
+                    for col in range(len(cleaned_input)):
+                        gw.set_square_color(current_row, col, square_colors[col])
 
                 
 
