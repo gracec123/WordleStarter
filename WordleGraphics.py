@@ -15,11 +15,11 @@ import tkinter
 N_ROWS = 6  # Number of rows
 N_COLS = 5  # Number of columns
 
-CORRECT_COLOR = "#1338BE"  # Light green for correct letters
-PRESENT_COLOR = "#C35817"  # Brownish yellow for misplaced letters
-MISSING_COLOR = "#999999"  # Gray for letters that don't appear
-UNKNOWN_COLOR = "#FFFFFF"  # Undetermined letters are white
-KEY_COLOR = "#DDDDDD"  # Keys are colored light gray
+CORRECT_COLOR = "#1338BE"       # blue for correct letters
+PRESENT_COLOR = "#C35817"       # orange for misplaced letters
+MISSING_COLOR = "#999999"       # Gray for letters that don't appear
+UNKNOWN_COLOR = "#FFFFFF"       # Undetermined letters are white
+KEY_COLOR = "#DDDDDD"           # Keys are colored light gray
 
 CANVAS_WIDTH = 500  # Width of the tkinter canvas (pixels)
 CANVAS_HEIGHT = 700  # Height of the tkinter canvas (pixels)
@@ -64,6 +64,7 @@ class WordleGWindow:
 
     def __init__(self):
         """Creates the Wordle window."""
+        self.game_over = False  # Add a game over flag
 
         def create_grid():
             return [
@@ -95,6 +96,9 @@ class WordleGWindow:
 
         def key_action(tke):
             print(tke)
+             # Check if the game is over
+            if self.game_over:
+                return  # Do not process key actions if the game is over
             if isinstance(tke, str):
                 ch = tke.upper()
             else:
@@ -206,7 +210,9 @@ class WordleGWindow:
     def show_message(self, msg, color="Black"):
         self._message.set_text(msg, color)
 
-
+    # Add a method to set the game over flag
+    def set_game_over(self, is_over):
+        self.game_over = is_over
 class WordleSquare:
     def __init__(self, canvas, row, col):
         x0 = (CANVAS_WIDTH - BOARD_WIDTH) / 2 + col * SQUARE_DELTA
