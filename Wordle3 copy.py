@@ -97,6 +97,8 @@ def wordle():
     current_row = 0
     gw = WordleGWindow()
     gw.add_enter_listener(enter_action)
+    gw.root.bind("<Delete>", delete_action)
+    gw.root.bind("<BackSpace>", delete_action)  
 
     # Choose a random word from 5 letter words for the answer
     # word = random.choice(FIVE_LETTER_WORDS).upper()
