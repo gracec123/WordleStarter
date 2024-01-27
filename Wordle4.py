@@ -1,4 +1,4 @@
-# File: Wordle3.py
+# File: Wordle4.py
 
 """
 Check whether the letters entered by the user form a word
@@ -44,18 +44,26 @@ def wordle():
                         square_colors[col] = PRESENT_COLOR
                         word_copy[word_copy.index(guess_letter)] = None
 
-                # Apply colors to the squares
+                # Apply colors to the squares and update keyboard keys
                 for col in range(len(cleaned_input)):
                     gw.set_square_color(current_row, col, square_colors[col])
+                    key_color = gw.get_key_color(cleaned_input[col])
+                    if square_colors[col] == CORRECT_COLOR:
+                        gw.set_key_color(cleaned_input[col], CORRECT_COLOR)
+                    elif square_colors[col] == PRESENT_COLOR and key_color != CORRECT_COLOR:
+                        gw.set_key_color(cleaned_input[col], PRESENT_COLOR)
 
-                # Check for win condition or last guess
-                if all(color == CORRECT_COLOR for color in square_colors) or current_row == N_ROWS - 1:
-                    gw.show_message(f"Game Over! The word was {word}.")
-                    game_over = True
+                # Check for win condition
+                if all(color == CORRECT_COLOR for color in square_colors):
+                    gw.show_message(f"Congrats! You've guessed the word {word}!")
+                    gw.set_game_over(True)
                 else:
                     current_row += 1
                     if current_row < N_ROWS:
                         gw.set_current_row(current_row)
+                    elif current_row == N_ROWS:
+                        gw.show_message(f"Game Over! The word was {word}.")
+                        gw.set_game_over(True)
             else:
                 gw.show_message("Invalid Word. Press DELETE to try again.")
         else:
@@ -67,11 +75,10 @@ def wordle():
     gw = WordleGWindow()
     gw.add_enter_listener(enter_action)
 
-    # Choose a random word from 5-letter words for the answer, in upper case
-    #word = random.choice(FIVE_LETTER_WORDS).upper()
-    word = "LARGE"
+    # Choose a specific word or a random word from 5-letter words for the answer, in upper case
+    word = random.choice(FIVE_LETTER_WORDS).upper()
+    #word = "GLASS"
     print(word)
-    
 
 if __name__ == "__main__":
     wordle()
