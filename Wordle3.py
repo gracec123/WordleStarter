@@ -2,7 +2,6 @@
 
 """
 Check whether the letters entered by the user form a word
-
 """
 
 import random
@@ -12,95 +11,67 @@ from WordleGraphics import WordleGWindow, N_COLS, N_ROWS, CORRECT_COLOR, PRESENT
 
 def wordle():
 
-    # Run Function when player type in and enter the word
     def enter_action(s):
         nonlocal current_row
+        nonlocal game_over
 
-        # Check if there are available rows
-        if current_row < N_ROWS:
+        # Check if the game is over
+        if game_over:
+            return
 
-            cleaned_input = str(s)
-            cleaned_input = cleaned_input.strip() 
-             # Check if the entered word has exactly 5 letters
-            if cleaned_input.isalpha() and len(cleaned_input) == 5:
+        cleaned_input = str(s).strip().upper()
 
-                print("Length of entered word:", len(cleaned_input))
-                print("Entered word:",  cleaned_input)
+        # Check if the entered word has exactly 5 letters
+        if len(cleaned_input) == 5 and cleaned_input.isalpha():
+            if cleaned_input in [word.upper() for word in FIVE_LETTER_WORDS]:
+                # Set the letters in the current row
+                for col, letter in enumerate(cleaned_input):
+                    gw.set_square_letter(current_row, col, letter)
 
-                # Check If the word is in the WordleDictionary
-                if  cleaned_input.lower() in FIVE_LETTER_WORDS:
+                # Initialize square colors
+                square_colors = [MISSING_COLOR] * 5
+                word_copy = list(word)
 
-                    # the word is in the dictionary, it shows "legitimate word"
-                    gw.show_message("It's a legitimate word.")
+                # First Pass: Check for correct positions
+                for col, guess_letter in enumerate(cleaned_input):
+                    if guess_letter == word[col]:
+                        square_colors[col] = CORRECT_COLOR
+                        word_copy[col] = None
 
-                    # Set the letters in the current row
-                    for col, letter in enumerate(cleaned_input.upper()):
-                        gw.set_square_letter(current_row, col, letter)
+                # Second Pass: Check for presence in wrong positions
+                for col, guess_letter in enumerate(cleaned_input):
+                    if square_colors[col] == MISSING_COLOR and guess_letter in word_copy:
+                        square_colors[col] = PRESENT_COLOR
+                        word_copy[word_copy.index(guess_letter)] = None
 
-  
-                
-                    # ...
-                    # After the first pass for correct positions
-                    # Create a copy of the word to keep track of matched letters
-                    remaining_word = list(word)
+                # Apply colors to the squares
+                for col in range(len(cleaned_input)):
+                    gw.set_square_color(current_row, col, square_colors[col])
 
-                    # Create a list to store the color for each square
-                    square_colors = [MISSING_COLOR] * len(cleaned_input)
-
-                    for col, guess_letter in enumerate(cleaned_input):
-                        word_letter = word[col]
-
-                        # First Pass: Check for correct positions
-                        if guess_letter == word_letter:
-                            square_colors[col] = CORRECT_COLOR
-                            remaining_word[col] = None  # Remove this letter from remaining_word
-
-                    # Second Pass: Check for presence in wrong positions
-                    for col, guess_letter in enumerate(cleaned_input):
-                        if square_colors[col] == MISSING_COLOR and guess_letter in remaining_word:
-                            square_colors[col] = PRESENT_COLOR
-                            remaining_word[remaining_word.index(guess_letter)] = None  # Remove one occurrence
-
-                    # Apply colors to the squares
-                    for col in range(len(cleaned_input)):
-                        gw.set_square_color(current_row, col, square_colors[col])
-
-                
-
-                    # Move to the next row
+                # Check for win condition or last guess
+                if all(color == CORRECT_COLOR for color in square_colors) or current_row == N_ROWS - 1:
+                    gw.show_message(f"Game Over! The word was {word}.")
+                    game_over = True
+                else:
                     current_row += 1
-
-                    # If there are more rows, update the current row in the graphics window
                     if current_row < N_ROWS:
                         gw.set_current_row(current_row)
-
-                else:
-
-                    # the word does not found in the dictionary, it shows "Not in the word list"
-                    gw.show_message("Invalid Word. Press DELETE to try again.")
-
-                    
             else:
-                # Display an error message if the entered word doesn't have exactly 5 letters
-                gw.show_message("Please enter a 5-letter word.")
-                print("Length of entered word:", len(cleaned_input))
-                print("Entered word:", s)
+                gw.show_message("Invalid Word. Press DELETE to try again.")
         else:
-            gw.show_message("You've used all rows!")
+            gw.show_message("Please enter a 5-letter word.")
 
-    # Set the current row = 0
+    # Set the current row = 0 and initialize game_over to False
     current_row = 0
+    game_over = False
     gw = WordleGWindow()
     gw.add_enter_listener(enter_action)
 
-    # Choose a random word from 5 letter words for the answer
+    # Choose a random word from 5-letter words for the answer, in upper case
     #word = random.choice(FIVE_LETTER_WORDS).upper()
     word = "GLASS"
     print(word)
-
-    # Check of the character is match with the random word
     
 
-# Startup code
 if __name__ == "__main__":
     wordle()
