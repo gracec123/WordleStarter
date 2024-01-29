@@ -15,11 +15,11 @@ import tkinter
 N_ROWS = 6  # Number of rows
 N_COLS = 5  # Number of columns
 
-CORRECT_COLOR = "#1338BE"       # blue for correct letters
-PRESENT_COLOR = "#C35817"       # orange for misplaced letters
-MISSING_COLOR = "#999999"       # Gray for letters that don't appear
-UNKNOWN_COLOR = "#FFFFFF"       # Undetermined letters are white
-KEY_COLOR = "#DDDDDD"           # Keys are colored light gray
+CORRECT_COLOR = "#1338BE"  # blue for correct letters
+PRESENT_COLOR = "#C35817"  # orange for misplaced letters
+MISSING_COLOR = "#999999"  # Gray for letters that don't appear
+UNKNOWN_COLOR = "#FFFFFF"  # Undetermined letters are white
+KEY_COLOR = "#DDDDDD"  # Keys are colored light gray
 
 CANVAS_WIDTH = 500  # Width of the tkinter canvas (pixels)
 CANVAS_HEIGHT = 700  # Height of the tkinter canvas (pixels)
@@ -96,7 +96,7 @@ class WordleGWindow:
 
         def key_action(tke):
             print(tke)
-             # Check if the game is over
+            # Check if the game is over
             if self.game_over:
                 return  # Do not process key actions if the game is over
             if isinstance(tke, str):
@@ -116,6 +116,12 @@ class WordleGWindow:
                     s += self._grid[self._row][col].get_letter()
                 for fn in self._enter_listeners:
                     fn(s)
+
+            elif ch == "\t":
+                # Logic to move focus to next key
+                self.current_focus = (self.current_focus + 1) % len(self.key_order)
+                self.update_key_focus()
+
             elif ch.isalpha():
                 self.show_message("")
                 if self._row < N_ROWS and self._col < N_COLS:
@@ -169,6 +175,8 @@ class WordleGWindow:
         self._message = create_message()
         self._keys = create_keyboard()
         self._enter_listeners = []
+        self.current_focus = 0
+        self.key_order = [key for row in KEY_LABELS for key in row]
         root.bind("<Key>", key_action)
         root.bind("<ButtonPress-1>", press_action)
         root.bind("<ButtonRelease-1>", release_action)
@@ -213,6 +221,16 @@ class WordleGWindow:
     # Add a method to set the game over flag
     def set_game_over(self, is_over):
         self.game_over = is_over
+
+    def update_key_focus(self):
+        focused_key_label = self.key_order[self.current_focus]
+        for key_label, key in self._keys.items():
+            if key_label == focused_key_label:
+                key.highlight()  # Highlight the focused key
+            else:
+                key.unhighlight()
+
+
 class WordleSquare:
     def __init__(self, canvas, row, col):
         x0 = (CANVAS_WIDTH - BOARD_WIDTH) / 2 + col * SQUARE_DELTA
@@ -317,6 +335,14 @@ class WordleKey:
             fg = "Black"
         self._canvas.itemconfig(self._frame, fill=color)
         self._canvas.itemconfig(self._text, fill=fg)
+
+    def highlight(self):
+        # Change the key's color to indicate it is focused
+        self.set_color("lightblue")  # Use a distinct color for focus
+
+    def unhighlight(self):
+        # Revert the key's color to its default state
+        self.set_color(UNKNOWN_COLOR)
 
 
 class WordleMessage:
