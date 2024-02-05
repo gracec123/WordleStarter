@@ -184,6 +184,18 @@ class WordleGWindow:
         self._col = 0
         atexit.register(start_event_loop)
 
+        toggle_button = root.Button(
+            root, text="Toggle Color", command=lambda: toggle_color(wordle_square)
+        )
+        toggle_button.pack()
+        
+        def toggle_color(wordle_square):
+            current_color = wordle_square.get_color()
+            new_color = "Red" if current_color != "Red" else "Blue"
+            wordle_square.set_color(new_color)
+
+    
+
     def get_square_letter(self, row, col):
         return self._grid[row][col].get_letter()
 
